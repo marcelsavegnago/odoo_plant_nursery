@@ -95,6 +95,7 @@ class Plants(models.Model):
     user_id = fields.Many2one(
         'res.users', string='Responsible', index=True, required=True,
         default=lambda self: self.env.user)
+    internal = fields.Boolean('Internal')
     # care informations
     description_care = fields.Html('Care instructions')
     description_preservation = fields.Html('Preservation instructions')
@@ -102,6 +103,7 @@ class Plants(models.Model):
         ('any', 'Any'), ('filtering', 'Filtering Soil'),
         ('heathland', 'Heathland'), ('loam', 'Loam')],
         string='Ground Type', default='any')
+    # sewing informations
     exposure = fields.Selection(selection=[
         ('sun', 'Sun'),
         ('bright', 'Bright'),

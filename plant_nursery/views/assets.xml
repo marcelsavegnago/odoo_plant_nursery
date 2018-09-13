@@ -6,4 +6,9 @@
         </xpath>
     </template>
 
+    <template id="assets_frontend" inherit_id="web.assets_frontend" name="Plant Nursery Frontend Assets">
+        <xpath expr="//script[last()]" position="after">
+            <script type="text/javascript" src="/plant_nursery/static/src/js/quote_ask.js"></script>
+        </xpath>
+    </template>
 </data></odoo>

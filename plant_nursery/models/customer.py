@@ -30,3 +30,13 @@ class Customer(models.Model):
                 self.country_id = self.partner_id.country_id.id
             if not self.address:
                 self.address = self.partner_id.with_context(show_address_only=True, address_inline=True)._get_name()
+
+    def find_or_create(self, name, email):
+        customer = self.search(['|', ('name', '=', name), ('email', '=', email)])
+        if not customer:
+            customer = self.create({'name': name, 'email': email})
+        elif customer.name != name:
+            customer.write({'name': name})
+        elif customer.email != email:
+            customer.write({'email': email})
+        return customer
