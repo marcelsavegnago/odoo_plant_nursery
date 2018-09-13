@@ -83,7 +83,7 @@ class Event(models.Model):
 class Plants(models.Model):
     _name = 'nursery.plant'
     _description = 'Nursery Plant'
-    _inherit = ['mail.thread', 'mail.activity.mixin', 'website.seo.metadata', 'website.published.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'website.seo.metadata', 'website.published.mixin', 'website.multi.mixin']
 
     # description
     name = fields.Char("Plant Name", required=True)
