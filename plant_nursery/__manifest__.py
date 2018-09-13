@@ -19,6 +19,7 @@
         'views/nursery_plant_quote_ask.xml',
         'data/ir_sequence_data.xml',
         'data/mail_template_data.xml',
+        'security/security.xml',
     ],
     'demo': [
     ],
