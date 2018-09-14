@@ -8,6 +8,7 @@ from odoo.exceptions import UserError
 
 class Category(models.Model):
     _name = 'nursery.plant.category'
+    _inherit = ['mail.alias.mixin']
     _description = 'Plant Category'
     _order = 'sequence asc, name'
 
@@ -30,10 +31,6 @@ class Category(models.Model):
         for category in self:
             category.plant_count = rg_data.get(category.id, 0)
 
-    def action_view_plants(self):
-        action = self.env.ref('plant_nursery.nursery_plant_action_category').read()[0]
-        return action
-
     @api.depends('order_ids')
     def _compute_order_count(self):
         rg_data = dict(
@@ -42,6 +39,25 @@ class Category(models.Model):
         )
         for category in self:
             category.order_count = rg_data.get(category.id, 0)
+
+    def get_alias_model_name(self, vals):
+        return 'nursery.order'
+
+    def get_alias_values(self):
+        values = super(Category, self).get_alias_values()
+        values['alias_defaults'] = {'category_id': self.id}
+        return values
+
+    def write(self, values):
+        res = super(Category, self).write(values)
+        if values.get('alias_id'):
+            for record in self:
+                record.alias_id.sudo().write(record.get_alias_values())
+        return res
+
+    def action_view_plants(self):
+        action = self.env.ref('plant_nursery.nursery_plant_action_category').read()[0]
+        return action
 
     def action_view_orders(self):
         action = self.env.ref('plant_nursery.nursery_order_action_category').read()[0]

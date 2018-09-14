@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import random
+
 from dateutil.relativedelta import relativedelta
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+from odoo.tools import email_split, email_split_and_format
 
 
 class Order(models.Model):
@@ -115,6 +118,29 @@ class Order(models.Model):
         if self.customer_id.partner_id:
             return self.customer_id.partner_id
         return self.env['res.partner']
+
+    def message_new(self, msg_dict, custom_values=None):
+        if custom_values is None:
+            custom_values = {}
+
+        # print(msg_dict.get('email_from'), msg_dict.get('author_id'), msg_dict.get('to'), msg_dict.get('recipients'), msg_dict.get('partner_ids'))
+        category = custom_values.pop('category_id', False)
+        domain = [('category_id', '=', custom_values.pop('category_id'))] if category else []
+
+        # find or create customer
+        email = email_split(msg_dict.get('email_from', False))[0]
+        name = email_split_and_format(msg_dict.get('email_from', False))[0]
+        customer = self.env['nursery.customer'].find_or_create(email, name)
+
+        # happy Xmas
+        plants = self.env['nursery.plant'].search(domain)
+        plant = self.env['nursery.plant'].browse([random.choice(plants.ids)])
+        custom_values.update({
+            'customer_id': customer.id,
+            'line_ids': [(4, plant.id)],
+        })
+
+        return super(Order, self).message_new(msg_dict, custom_values=custom_values)
 
 
 class OrderLine(models.Model):
