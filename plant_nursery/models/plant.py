@@ -86,8 +86,9 @@ class Plants(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin', 'website.seo.metadata', 'website.published.multi.mixin']
 
     # description
-    name = fields.Char("Plant Name", required=True)
-    price = fields.Float()
+    name = fields.Char("Plant Name", required=True, tracking=1)
+    price = fields.Float(tracking=2)
+    description_short = fields.Html('Short description')
     description = fields.Html('Description')
     description_short = fields.Html('Short description')
     category_id = fields.Many2one('nursery.plant.category', string='Category')
@@ -168,3 +169,14 @@ class Plants(models.Model):
             'view_mode': 'kanban,tree,form',
             'domain': [('line_ids.plant_id', 'in', self.ids)],
         }
+
+    def _track_subtype(self, init_values):
+        if 'price' in init_values:
+            return self.env.ref('plant_nursery.plant_price')
+        return super(Plants, self)._track_subtype(init_values)
+
+    def _track_template(self, changes):
+        res = super(Plants, self)._track_template(changes)
+        if 'price' in changes:
+            res['price'] = (self.env.ref('plant_nursery.mail_template_plant_price_updated'), {'composition_mode': 'comment'})
+        return res
