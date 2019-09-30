@@ -97,23 +97,24 @@
 
 <template id="plant_layout" name="Frontend Layout">
     <t t-call="website.layout">
-        <div id="wrap" class='o_portal_wrap'>
-            <div class="container mb64">
-                <div t-if="error and error == 'access'">
-                    <div class="alert alert-warning">
-                        This is not possible ! Please use a token.
-                    </div>
+        <div id="wrap" class="wrap o_nursery_wrap mt-0">
+            <div class="o_nursery_gradient position-relative text-white pb-md-5 pb-2 pt-md-0 pt-0">
+                <a href="/plants">
+                    <img src="/plant_nursery/static/img/bg_plant_0.jpg"
+                        class="o_nursery_banner img img-responsive"
+                        style="width: 100%;"/>
+                </a>
+            </div>
+
+            <div class="container mb64 mt8">
+                <div t-if="error and error == 'access'" class="alert alert-warning">
+                    This is not possible ! Please use a token.
                 </div>
                 <div class="row">
-                    <a href="/plants">
-                        <img src="/plant_nursery/static/img/bg_plant_0.jpg"
-                            class="mt16 img img-responsive img-responsive img-rounded"
-                            style="width: 100%;"/>
-                    </a>
-                    <div t-attf-class="col-md-8 col-lg-7">
+                    <div t-attf-class="col-md-8">
                         <t t-raw="0"/>
                     </div>
-                    <div id="o_my_sidebar" class="col-md-4 col-lg-offset-1 o_my_sidebar">
+                    <div id="o_nursery_wrap_sidebar" class="col-md-4">
                         <div class="o_plant_quote">
                             <h3 class="page-header">XMas Surprise Quote</h3>
                             <t t-if="order">
@@ -138,7 +139,12 @@
     <t t-call="plant_nursery.plant_layout">
         <h3 class="page-header">Select a Plant</h3>
         <h4 t-if="search.get('category')">Category: <t t-esc="search['category']"/></h4>
-        <div class="row">
+        <div class="row mx-n2">
+            <t t-foreach="plants" t-as="plant">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 px-2 d-flex flex-grow-1" t-call="plant_nursery.plant_card"/>
+            </t>
+        </div>
+<!--         <div class="row">
             <t t-foreach="plants" t-as="plant">
                 <div class="col-md-4 mb32">
                     <div class="well well-sm">
@@ -157,7 +163,7 @@
                     </div>
                 </div>
             </t>
-        </div>
+        </div> -->
     </t>
 </template>
 
@@ -184,6 +190,40 @@
             </div>
         </div>
     </t>
+</template>
+
+<template id='plant_card' name="Plant Card">
+    <div class="card w-100 o_nursery_plant_card mb-4">
+        <t t-set="plant_image" t-value="website.image_url(plant, 'image')"/>
+        <a t-attf-href="/plants/#{slug(plant)}" t-att-title="plant.name">
+            <div class="card-img-top" t-attf-style="padding-top: 50%; background-image: url(#{plant_image}); background-size: cover; background-position:center"/>
+        </a>
+        <div class="card-body p-3">
+            <a class="card-title h5 mb-2 o_wslides_desc_truncate_2" t-attf-href="/plants/#{slug(plant)}" t-esc="plant.name"/>
+            <div class="card-text mt-1">
+                <div class="font-weight-light o_wslides_desc_truncate_3" t-field="plant.description"/>
+                <div t-if="plant.tag_ids" class="mt-2 pt-1 o_wslides_desc_truncate_2">
+                    <t t-foreach="plant.tag_ids" t-as="tag">
+                        <a t-att-href="'/plants?tag_id=%s' % tag.id" class="badge badge-light" t-esc="tag.name"/>
+                    </t>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer bg-white text-600 px-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <small t-if="channel.total_time" class="font-weight-bold" t-esc="channel.total_time" t-options="{'widget': 'duration', 'unit': 'hour', 'round': 'minute'}"/>
+                <div class="d-flex flex-grow-1 justify-content-end">
+                    <t t-if="channel.is_member and channel.completed">
+                        <span class="badge badge-pill badge-success pull-right py-1 px-2"><i class="fa fa-check"/> Completed</span>
+                    </t>
+                    <div t-elif="channel.is_member" class="progress w-50" style="height: 6px">
+                        <div class="progress-bar" role="progressbar" t-att-aria-valuenow="channel.completion" aria-valuemin="0" aria-valuemax="100" t-attf-style="width:#{channel.completion}%;"/>
+                    </div>
+                    <small t-else=""><b t-esc="channel.total_slides"/> steps</small>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
     </data>
