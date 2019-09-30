@@ -74,7 +74,7 @@ class Order(models.Model):
         res = super(Order, self).create(vals)
         res.activity_schedule(
             'mail.mail_activity_data_todo',
-            user_id=self.env.ref('base.user_demo').id,
+            user_id=res.user_id.id,
             date_deadline=fields.Date.today() + relativedelta(days=1),
             summary=_('Pack the order'))
         return res
